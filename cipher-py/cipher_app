@@ -1,0 +1,109 @@
+import tkinter as tk
+from tkinter import ttk
+
+class TranspositionCipher:
+    def __init__(self, key):
+        if not isinstance(key, int) or key <= 0:
+            raise ValueError("Key must be a positive integer.")
+        self.key = key
+        
+    def encrypt_message(self, message):
+        encrypted_message = ""
+        for char in message:
+            encrypted_message += chr(ord(char) + self.key)
+        return encrypted_message
+
+    def decrypt_message(self, encrypted_message):
+        decrypted_message = ""
+        for char in encrypted_message:
+            decrypted_message += chr(ord(char) - self.key)
+        return decrypted_message
+
+class TranspositionCipherApp:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Transposition Cipher App")
+        self.root.configure(bg="#2b2b2b")
+        
+        self.create_widgets()
+        
+    def create_widgets(self):
+        # Create widgets for the application
+        self.plaintext_label = ttk.Label(self.root, text="Enter your text:", foreground="white", background="#2b2b2b")
+        self.plaintext_label.grid(row=0, column=0, pady=10, padx=5, sticky="w")
+        
+        self.plaintext_entry = ttk.Entry(self.root, width=50)
+        self.plaintext_entry.grid(row=0, column=1, pady=5, padx=5, sticky="w")
+        
+        self.key_label = ttk.Label(self.root, text="Enter secret key:", foreground="white", background="#2b2b2b")
+        self.key_label.grid(row=1, column=0, pady=5, padx=5, sticky="w")
+        
+        self.key_entry = ttk.Entry(self.root, show="*")  # Use show="*" to hide characters
+        self.key_entry.grid(row=1, column=1, pady=5, padx=5, sticky="w")
+        
+        self.encrypt_button = ttk.Button(self.root, text="Encrypt", command=self.encrypt)
+        self.encrypt_button.grid(row=2, column=0, pady=5, padx=5, sticky="w")
+        
+        self.decrypt_button = ttk.Button(self.root, text="Decrypt", command=self.decrypt)
+        self.decrypt_button.grid(row=2, column=1, pady=5, padx=5, sticky="w")
+        
+        self.result_label = ttk.Label(self.root, text="Result:", foreground="white", background="#2b2b2b")
+        self.result_label.grid(row=3, column=0, columnspan=2, pady=5, padx=5, sticky="w")
+        
+        self.result_text = tk.Text(self.root, height=5, width=50, state="disabled")
+        self.result_text.grid(row=4, column=0, columnspan=2, pady=5, padx=5, sticky="w")
+
+        # Styling
+        style = ttk.Style()
+        style.theme_use("clam")
+        style.configure("TLabel", foreground="white", background="#2b2b2b")
+        style.configure("TEntry", foreground="black", background="white")
+        style.configure("TButton", foreground="white", background="#4CAF50")
+        
+    def encrypt(self):
+        plaintext = self.plaintext_entry.get()
+        key = self.get_key()
+        if not key.isdigit() or int(key) <= 0:
+            self.display_error("Invalid or missing key. Please enter a positive integer key.")
+            return
+        
+        cipher = TranspositionCipher(int(key))
+        encrypted_message = cipher.encrypt_message(plaintext)
+        self.display_result(encrypted_message)
+        
+    def decrypt(self):
+        encrypted_message = self.plaintext_entry.get()
+        key = self.get_key()
+        if not key.isdigit() or int(key) <= 0:
+            self.display_error("Invalid or missing key. Please enter a positive integer key.")
+            return
+        
+        cipher = TranspositionCipher(int(key))
+        decrypted_message = cipher.decrypt_message(encrypted_message)
+        self.display_result(decrypted_message)
+        
+    def get_key(self):
+        return self.key_entry.get()
+
+    def display_result(self, result):
+        self.result_text.config(state="normal")
+        self.result_text.delete(1.0, tk.END)
+        self.result_text.insert(tk.END, result)
+        self.result_text.config(state="disabled")
+        
+    def display_error(self, error_message):
+        self.result_text.config(state="normal")
+        self.result_text.delete(1.0, tk.END)
+        self.result_text.insert(tk.END, "Error: " + error_message)
+        self.result_text.config(state="disabled")
+
+# Initialize Tkinter
+root = tk.Tk()
+root.configure(bg="#2b2b2b")
+root.geometry("400x300")
+
+# Create the application
+app = TranspositionCipherApp(root)
+
+# Run the Tkinter event loop
+root.mainloop()
